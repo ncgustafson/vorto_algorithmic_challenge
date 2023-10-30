@@ -1,6 +1,6 @@
 # vorto_algorithmic_challenge
 
-A solution to the vorto algorithmic challenge using a nearest neighbor heuristic, along with intra and inter relocation improvement heuristics.
+A solution to the vorto algorithmic challenge using a nearest neighbor heuristic, along with intra and inter relocation improvement heuristics. Inspiration for the hueristics came from this article: https://arxiv.org/pdf/2303.04147.pdf
 
 
 
