@@ -13,7 +13,6 @@ vector<delivery> read_data(string filename){
     vector<delivery> res;
     ifstream MyReadFile(filename);
     string s;
-    int count = 0;
     while (getline (MyReadFile, s)) {
         if(s[0] == 'l' || s.size() == 0){
             continue;
@@ -26,8 +25,7 @@ vector<delivery> read_data(string filename){
         double dropoff_y = stod(s.substr(s.find(',', p_loc) + 2, s.size() - s.find(',', p_loc) - 3));
         coordinate dropoff_coordinate = {dropoff_x, dropoff_y};        
         delivery new_delivery = delivery(pickup_coordinate, dropoff_coordinate);
-        res.push_back(new_delivery);        
-        ++count;
+        res.push_back(new_delivery);
     }
     return res;
 }
