@@ -13,11 +13,15 @@ class route{
         if(deliveries.size() == 0){
             return 0;
         }
-        double running_cost = dist_from_zero(this->begin_location());
-        for(int i = 0; i < (int)deliveries.size(); ++i){
+        double running_cost = dist_from_zero(deliveries[0].pickup);
+        running_cost += deliveries[0].cost;
+       
+        for(int i = 1; i < (int)deliveries.size(); ++i){
             running_cost += deliveries[i].cost;
+            running_cost += dist(deliveries[i - 1].dropoff, deliveries[i].pickup);
         }
-        running_cost += dist_from_zero(this->end_location());
+        running_cost += dist_from_zero(deliveries[deliveries.size() - 1].dropoff);
+       
         return running_cost;
     }
 
@@ -42,7 +46,9 @@ class route{
     void print(){
         cout << "[";
         for(int i = 0; i < (int)deliveries_by_index.size(); ++i){
+            //deliveries[i].print();
             cout << deliveries_by_index[i];
+            //cout << deliveries[i].cost << endl;
             if(i != (int)deliveries_by_index.size() - 1){
                 cout << ",";
             }
@@ -81,15 +87,9 @@ class route{
     //returns the cost of a swap, used in the inter relocation heuristic
     double swap_cost(int delivery_index, delivery d){
         delivery old_d = deliveries[delivery_index];
-        double test_cost = cost - old_d.cost + d.cost;
-        if(delivery_index == 0){
-            test_cost -= dist_from_zero(old_d.pickup);
-            test_cost += dist_from_zero(d.pickup);
-        }
-        else if(delivery_index == (int)deliveries.size() - 1){
-            test_cost -= dist_from_zero(old_d.dropoff);
-            test_cost += dist_from_zero(d.dropoff);
-        }
+        deliveries[delivery_index] = d;
+        double test_cost = compute_cost();
+        deliveries[delivery_index] = old_d;
         return test_cost;
     }
 
