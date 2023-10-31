@@ -27,11 +27,6 @@ vector<delivery> read_data(string filename){
         delivery new_delivery = delivery(pickup_coordinate, dropoff_coordinate);
         res.push_back(new_delivery);
     }
-
-    /*for(int i = 0; i < (int)res.size(); ++i){
-        res[i].print();
-        cout << i + 1 << " " << res[i].cost << endl;
-    }*/
     return res;
 }
 
