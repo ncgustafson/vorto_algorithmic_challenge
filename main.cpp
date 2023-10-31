@@ -18,15 +18,20 @@ vector<delivery> read_data(string filename){
             continue;
         }        
         double pickup_x = stod(s.substr(s.find(' ') + 2, s.find(',') - 2));        
-        double pickup_y = stod(s.substr(s.find(',') + 2, s.find(')') - s.find(',') - 2));
+        double pickup_y = stod(s.substr(s.find(',') + 1, s.find(')') - s.find(',') - 2));
         coordinate pickup_coordinate = {pickup_x, pickup_y};
         int p_loc = s.find(')') + 3;
         double dropoff_x = stod(s.substr(p_loc, s.find(',', p_loc) - p_loc));
-        double dropoff_y = stod(s.substr(s.find(',', p_loc) + 2, s.size() - s.find(',', p_loc) - 3));
+        double dropoff_y = stod(s.substr(s.find(',', p_loc) + 1, s.size() - s.find(',', p_loc) - 3));
         coordinate dropoff_coordinate = {dropoff_x, dropoff_y};        
         delivery new_delivery = delivery(pickup_coordinate, dropoff_coordinate);
         res.push_back(new_delivery);
     }
+
+    /*for(int i = 0; i < (int)res.size(); ++i){
+        res[i].print();
+        cout << i + 1 << " " << res[i].cost << endl;
+    }*/
     return res;
 }
 
@@ -128,6 +133,9 @@ double inter_relocate_routes(vector<route> &routes, double cost){
         double biggest_change = 0;
         vector<route> min_route = routes;
         for(int i = 0; i < (int)routes.size(); ++i){
+            if(min_route[i].deliveries.size() == 0){
+                continue;
+            }
             for(int j = 0; j < (int)routes[i].deliveries.size(); ++j){
                 for(int k = i + 1; k < (int)routes.size(); ++k){
                     double old_cost = routes[i].cost + routes[k].cost;
@@ -135,12 +143,14 @@ double inter_relocate_routes(vector<route> &routes, double cost){
                         //test swapping routes[i].deliveries[j], routes[k].deliveries[l]
                         double swap1 = routes[i].swap_cost(j, routes[k].deliveries[l]);
                         double swap2 = routes[k].swap_cost(l, routes[i].deliveries[j]);
+                         
                         if(swap1 < 720 && swap2 < 720 && old_cost - (swap1 + swap2) > biggest_change){
-                            //good swap!
+                            //good swap!                            
+                            biggest_change = old_cost - (swap1 + swap2);
                             min_route = routes;
                             min_route[i].swap_delivery(j, routes[k].deliveries[l], routes[k].deliveries_by_index[l]);
                             min_route[k].swap_delivery(l, routes[i].deliveries[j], routes[i].deliveries_by_index[j]);
-                        }
+                        }                        
                     }
                 }
             }
@@ -148,7 +158,7 @@ double inter_relocate_routes(vector<route> &routes, double cost){
         routes = min_route;
         double new_cost = calculate_routes_cost(routes);
         if(cost == new_cost || new_cost > cost){
-            break;
+           break;
         }
         cost = new_cost;
     }
@@ -164,8 +174,8 @@ int main(int argc,  char *argv[]){
     string filename = argv[1];
     vector<route> routes;
     vector<delivery> deliveries = read_data(filename);
-    double cost = solve(deliveries, routes);        
-    cost = intra_relocate_routes(routes);
+    solve(deliveries, routes);        
+    double cost = intra_relocate_routes(routes);
     cost = inter_relocate_routes(routes, cost);
     print_routes(routes);    
     return 0;
